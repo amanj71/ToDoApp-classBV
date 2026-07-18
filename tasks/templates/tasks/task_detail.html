@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Task Detail
+{% endblock %}
+
+
+{% block content %}
+    <div>
+        <h2> Title: </h2>
+        <h3> {{task.title}} </h3>
+    </div>
+ 
+    <div>
+    <h4> task status: </h4>
+        {% if task.status == "F" %}
+        <p> Future Task </p>
+        {% endif %}
+        {% if task.status == "P" %}
+        <p> Pending Task </p>
+        {% endif %}
+        {% if task.status == "C" %}
+        <p> Completed Task </p>
+        {% endif %}
+    </div>
+
+    <div>
+    <h4> task importance: </h4>
+        {% if task.importance == "H" %}
+        <p> High </p>
+        {% endif %}
+        {% if task.importance == "M" %}
+        <p> Medium </p>
+        {% endif %}
+        {% if task.importance == "L" %}
+        <p> Low </p>
+        {% endif %}
+    </div>
+
+    <h4> Task Category: </h4>
+    <p> {{task.category}} </p>
+    <h4> Task Created Date: </h4>
+    <p> {{task.created_date}} </p>
+    <h4> Task Completed Date: </h4>
+    <p> {{task.completed_date}} </p>
+    <br>
+    <br>
+    <a href="{% url 'tasks:task-delete' task.pk %}">
+        <button class="favorite styled" type="button"> delete </button>
+    </a>
+{% endblock %}

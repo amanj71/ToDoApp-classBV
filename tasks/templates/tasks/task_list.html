@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Tasks List
+{% endblock %}
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create Task">
+        
+        {% for message in messages %}
+            <div class="alert alert-primary" role="alert">
+                {{message}}
+            </div>
+        {% endfor %}
+    </form>
+    <hr>
+    
+    <h2> Task Lists Here </h2>
+    {% for task in tasks %}
+        <small> {{ task.author }} -- {{task.importance}} </small>
+        <a href="{% url 'tasks:task-detail' task.pk %}"> <h3> {{task.title}} </h3> </a>
+        <a> {{task.created_date}} ----- {{task.category}} </a>
+        <br>
+        <a href="{% url 'tasks:task-edit' task.pk %}">
+            <button class="favorite styled" type="button"> Edit </button>
+        </a>    
+    <hr>
+    {% endfor %}
+
+
+
+
+{% endblock %}

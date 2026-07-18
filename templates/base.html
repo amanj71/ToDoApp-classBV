@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+</head>
+<body>
+    <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+        </div>
+    </nav>
+
+    <div style="background-color: rgb(190, 214, 173);">
+        <br>
+        {% block content %}
+        {% endblock %}
+        <br>
+    </div>
+    <div style="background-color: rgb(215, 187, 200);">
+        <h4>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            This Content is rendering from base template
+        </h4>
+    </div>
+</body>
+
+</html>
