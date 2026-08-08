@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -40,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 3rd party apps
     'rest_framework',
+    'drf_yasg',
+    'rest_framework_simplejwt',
+    "rest_framework_simplejwt.token_blacklist",
 
     # project apps
     'accounts',
@@ -122,3 +126,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+## RestFramework Settings Section
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_USE_TLS = False
+EMAIL_PORT = 25
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'train@todolist-cbv.com'
+EMAIL_HOST_PASSWORD = ''
+
+
+# SimpleJWT Authentication settings
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10), # Shorter-lived access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),    # Longer-lived refresh token
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    # ... other settings can be added here ...
+}

@@ -15,13 +15,36 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from rest_framework import permissions
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
 from django.urls import path, include
 
+## Implement API Documentation structure here
+schema_view = get_schema_view(
+   openapi.Info(
+      title="ToDoApp-CBV API", # you can assign a name to your documentation api
+      default_version='v0',   # assign a version you want
+      description="Practice Class Base View Django",  # write any description for your api doc
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@snippets.local"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
+)
+
+## paths
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('account/', include('accounts.urls')),
+    path('account/', include('django.contrib.auth.urls')),
+    # API Documentation URLs
+    path('swagger.<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'), #Specific
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    # App URLs
+    path('accounts/', include('accounts.urls')),
     path('tasks/', include('tasks.urls')),
-    path('api/v0/', include('tasks.api.v0.urls')),
-    path('api/v01/', include('tasks.api.v01.urls')),
 ]

@@ -1,0 +1,3 @@
+Hi {{email | default:"there"}}, click the buttom to confirm your email.
+we are going to get you inside
+{{ activation_link }}
