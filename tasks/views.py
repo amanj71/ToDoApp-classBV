@@ -44,6 +44,9 @@ class TaskList(LoginRequiredMixin,ListView, FormView):
     
 class TaskDetail(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Task
+
+    def get_queryset(self):
+        return self.model.objects.filter(author=Profile.objects.get(profile_user=self.request.user))
     
     def test_func(self):
         """
@@ -60,6 +63,9 @@ class TaskEdit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = 'tasks/task_edit.html'
     success_url = '/tasks/'
     form_class = TaskForm
+
+    def get_queryset(self):
+        return self.model.objects.filter(author=Profile.objects.get(profile_user=self.request.user))
     
     def test_func(self):
         """
@@ -92,6 +98,9 @@ class TaskEdit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class TaskDelete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Task
     success_url = '/tasks/'
+
+    def get_queryset(self):
+        return self.model.objects.filter(author=Profile.objects.get(profile_user=self.request.user))
     
     def test_func(self):
         """

@@ -30,11 +30,35 @@ class ResendActivationLinkSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 class UserTokenObtainSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        token['email'] = user.email
+        return token
+
     def validate(self, attrs):
         data = super().validate(attrs)
         if not self.user.is_staff:
             raise serializers.ValidationError("Please activate your account first.")
+
+        tenant_id = None
+        request = self.context.get('request')
+        if request is not None:
+            tenant_id = request.META.get('HTTP_X_TENANT_ID')
+            if not tenant_id:
+                host = request.get_host()
+                tenant_id = host.split(':')[0] if host else None
+
+        if tenant_id:
+            token = self.get_token(self.user)
+            token['tenant'] = tenant_id
+            data['refresh'] = str(token)
+            data['access'] = str(token.access_token)
+            data['tenant'] = tenant_id
+
         data['user_id'] = self.user.id
+        data['username'] = self.user.username
         data['email'] = self.user.email
         return data
 

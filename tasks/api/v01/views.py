@@ -18,9 +18,12 @@ class TaskList(ListCreateAPIView):
     
 
 class TaskDetail(RetrieveUpdateDestroyAPIView):
-    queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, IsOwner]
+
+    def get_queryset(self):
+        profile = Profile.objects.get(profile_user=self.request.user)
+        return Task.objects.filter(author=profile)
     
 
 
