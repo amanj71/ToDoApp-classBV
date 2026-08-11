@@ -30,6 +30,18 @@ class ResendActivationLinkSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 class UserTokenObtainSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        # include tenant information in the token so tokens cannot be reused across tenants
+        token = super().get_token(user)
+        try:
+            from django.db import connection
+            tenant_schema = getattr(connection, 'schema_name', 'public')
+        except Exception:
+            tenant_schema = 'public'
+        token['tenant'] = tenant_schema
+        return token
+
     def validate(self, attrs):
         data = super().validate(attrs)
         if not self.user.is_staff:
