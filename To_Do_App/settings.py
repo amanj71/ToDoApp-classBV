@@ -14,6 +14,8 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
+from .installed import _INSTALLED_APPS, _CUSTOMER_INSTALLED_APPS
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,31 +29,20 @@ SECRET_KEY = 'django-insecure-*i(sb(g1h9s_ppah6p&va)^3!f77zi5^)ghs=_k3x%lz#)bub7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    ".localhost"
+]
 
 
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    # 3rd party apps
-    'rest_framework',
-    'drf_yasg',
-    'rest_framework_simplejwt',
-    "rest_framework_simplejwt.token_blacklist",
-
-    # project apps
-    'accounts',
-    'tasks',
-]
+INSTALLED_APPS = _INSTALLED_APPS
+CUSTOMER_INSTALLED_APPS = _CUSTOMER_INSTALLED_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'helpers.middleware.midschemas.TenantSchemaMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -83,10 +74,22 @@ WSGI_APPLICATION = 'To_Do_App.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        # "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "helpers.db.engine",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "123",
+        "HOST": "localhost",   # or 127.0.0.1
+        "PORT": "5432",
     }
 }
 

@@ -21,6 +21,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from django.urls import path, include
+from To_Do_App import views
 
 ## Implement API Documentation structure here
 schema_view = get_schema_view(
@@ -47,4 +48,6 @@ urlpatterns = [
     # App URLs
     path('accounts/', include('accounts.urls')),
     path('tasks/', include('tasks.urls')),
+    # as home
+    path('', views.Home.as_view())
 ]

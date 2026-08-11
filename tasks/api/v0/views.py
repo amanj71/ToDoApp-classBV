@@ -1,5 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import (CreateAPIView, ListCreateAPIView,
+                                     RetrieveUpdateDestroyAPIView, GenericAPIView)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
@@ -11,8 +13,9 @@ from tasks.models import Category, Task
 from accounts.models import Profile
 
 ## Write Your Class Base Views Here
-class TaskList(APIView):
+class TaskList(GenericAPIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = TaskSerializer
     
     def get(self, request):
         queryset = Task.objects.filter(author=Profile.objects.get(profile_user=self.request.user))
@@ -24,8 +27,9 @@ class TaskList(APIView):
         serializer.save()
         return Response(serializer.data)
 
-class TaskDetail(APIView):
+class TaskDetail(GenericAPIView):
     permission_classes = [IsAuthenticated, IsOwner]
+    serializer_class = TaskSerializer
 
     def get(self, request, pk):
         task = get_object_or_404(Task, id=pk)

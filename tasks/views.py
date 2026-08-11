@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView ,ListView, DetailView, FormView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
-from .models import Task, Category
+from .models import Task, VisitPages
 from django.contrib import messages
 
 from accounts.models import Profile
@@ -20,6 +20,10 @@ class TaskList(LoginRequiredMixin,ListView, FormView):
 
     form_class = TaskForm
     success_url = '/tasks/'
+
+    def get(self, request):
+        visit_obj = VisitPages.objects.create(path='/tasks/', user=request.user)
+        return super().get(request)
 
     def get_queryset(self):
         return self.model.objects.filter(author=Profile.objects.get(profile_user=self.request.user))
@@ -44,7 +48,10 @@ class TaskList(LoginRequiredMixin,ListView, FormView):
     
 class TaskDetail(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Task
-    
+    def get(self, request, pk):
+        visit_obj = VisitPages.objects.create(path='/id_task/', user=request.user)
+        return super().get(request, pk)
+
     def test_func(self):
         """
         this method ensures that every users just can edit thier own tasks, even if you passed

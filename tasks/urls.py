@@ -11,5 +11,5 @@ urlpatterns = [
     path('<int:pk>/delete', TaskDelete.as_view(), name='task-delete'),
     # API URLs
     path('api/v0/', include('tasks.api.v0.urls')),
-    path('api/v01/', include('tasks.api.v01.urls')),
+    # path('api/v01/', include('tasks.api.v01.urls')),
 ]
