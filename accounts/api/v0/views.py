@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.db import connection
 
 import jwt
 from jwt import exceptions as jwtexceptions
@@ -74,10 +75,16 @@ class ActiveUserAPI(APIView):
             if decode_token["purpose"] != "activation":
                 raise TokenError("Invalid token")
             user_id = decode_token['user_id']
+            token_tenant_schema = decode_token['tenant']
         except Exception:
             return Response({"detail": "Invalid or expired token."},
                             status=status.HTTP_400_BAD_REQUEST)
-        user = get_object_or_404(User, id=user_id)
+
+        request_tenan_schema = getattr(connection, 'schema_name')
+        if token_tenant_schema != request_tenan_schema:
+            return Response({"detail": "somthing went wrong!"}, status=status.HTTP_400_BAD_REQUEST)
+        user = get_object_or_404(User, id=user_id)   
+
         if user.is_staff:
             return Response({'details': 'Your account is ALREADY known as staff!'})
         user.is_staff = True
@@ -149,7 +156,7 @@ class UserResetPasswordAPI(GenericAPIView):
         try:
             user = User.objects.get(email=serializer.validated_data['email'])
             token = create_reset_password_token(user)
-        except user.DoesNotExist:
+        except User.DoesNotExist:
             return generic
 
         if not user.is_staff :
@@ -184,17 +191,27 @@ class UserChangeResettedPasswordAPI(GenericAPIView):
             if decode_token["purpose"] != "reset-password":
                 raise TokenError("Invalid token")
             user_id = decode_token['user_id']
+            token_tenant_schema = decode_token['tenant']
+            
         except Exception:
             return Response({"detail": "Invalid or expired token."},
                             status=status.HTTP_400_BAD_REQUEST)
-        user = User.objects.get(id=user_id)
-
+        request_tenant_schema = getattr(connection, 'schema_name')
+        if token_tenant_schema == request_tenant_schema:
+            try:
+                user = User.objects.get(id=user_id)
+            except:
+                return Response({'detail': "something goes wrong! tnx for your attention :)"},
+                                status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'detail': "Somthing is Wrong!"}, status=status.HTTP_400_BAD_REQUEST)
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         user.set_password(serializer.validated_data['password'])
         user.save(update_fields=["password"])
 
-        return Response({"detail": "new password has been set for your account!"})
+        return Response({"detail": "new password has been set for your account!"},
+                        status=status.HTTP_200_OK)
 
         
